@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AA Manchester Plumbing & Heating Services | Stockport & Manchester</title>
+    
+    <!-- CSS Dependencies -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-blue: #003366;
+            --accent-blue: #007bff;
+            --light-grey: #f8f9fa;
+            --dark-navy: #001f3f;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --transition: all 0.3s ease-in-out;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background-color: var(--light-grey);
+            color: #333;
+        }
+
+        /* Loading Screen */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: var(--dark-navy);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #fff;
+            border-top: 5px solid var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Navbar Customization */
+        .navbar {
+            transition: var(--transition);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        .navbar.scrolled {
+            padding: 5px 0;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .nav-link {
+            font-weight: 600;
+            color: var(--primary-blue) !important;
+            position: relative;
+            margin: 0 10px;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--accent-blue);
+            transition: var(--transition);
+        }
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* Page Transitions */
+        .page-content {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .page-content.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hero Carousel Section */
+        .hero-carousel {
+            height: 90vh;
+            position: relative;
+            overflow: hidden;
+        }
+        .carousel-item {
+            height: 90vh;
+        }
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.4);
+        }
+        .hero-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            z-index: 10;
+            color: white;
+            text-align: center;
+        }
+        .hero-badge {
+            background: #ffcc00;
+            color: #000;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Cards & UI */
+        .service-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: var(--transition);
+            height: 100%;
+            border-bottom: 4px solid transparent;
+        }
+        .service-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent-blue);
+        }
+        .service-card i {
+            font-size: 3rem;
+            color: var(--accent-blue);
+            margin-bottom: 20px;
+        }
+
+        /* Buttons */
+        .btn-premium {
+            background: var(--accent-blue);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            border: none;
+        }
+        .btn-premium::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+            z-index: -1;
+        }
+        .btn-premium:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Gallery */
+        .gallery-item {
+            overflow: hidden;
+            border-radius: 10px;
+            cursor: pointer;
+            height: 250px;
+            position: relative;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        /* Lightbox */
+        #lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        #lightbox img {
+            max-width: 90%;
+            max-height: 80vh;
+            border: 5px solid white;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-navy);
+            color: white;
+            padding: 60px 0 20px;
+        }
+        .footer-link {
+            color: #ccc;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .footer-link:hover {
+            color: var(--accent-blue);
+            padding-left: 5px;
+        }
+
+        /* Testimonials */
+        .testimonial-slider {
+            max-width: 800px;
+            margin: auto;
+        }
+        .testimonial-item {
+            display: none;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        .testimonial-item.active { display: block; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: var(--primary-blue); border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Screen -->
+    <div id="loader">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Lightbox -->
+    <div id="lightbox" onclick="this.style.display='none'">
+        <img src="" alt="Zoomed view" id="lightbox-img">
+    </div>
+
+    <!-- Header / Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#" onclick="showPage('home')">
+    <img src="images/logo.png" alt="AA Manchester Logo" style="height:50px;" class="me-2">
+    <small style="font-size: 0.7rem; color: #8892b0;">PLUMBING & HEATING</small>
+</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto text-center">
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="showPage('home')">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="showPage('plumbing')">Plumbing</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="showPage('installations')">Installations</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="showPage('reviews')">Reviews</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="showPage('gallery')">Gallery</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="showPage('location')">Location</a></li>
+                    <li class="nav-item"><a class="nav-link btn btn-outline-primary ms-lg-3 px-4 rounded-pill mt-2 mt-lg-0" href="#" onclick="showPage('contact')">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENT WRAPPER -->
+    <main>
+        
+        <!-- HOME PAGE -->
+        <div id="home" class="page-content active">
+            <!-- Hero Carousel Section -->
+            <section class="hero-carousel">
+                <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active" data-bs-interval="5000">
+                            <img src="images/slide1.jpg" alt="Plumbing Engineer">
+                        </div>
+                        <div class="carousel-item" data-bs-interval="5000">
+                            <img src="images/slide2.jpg" alt="Boiler Installation">
+                        </div>
+                        <div class="carousel-item" data-bs-interval="5000">
+                            <img src="images/slide2.jpg" alt="Heating Repair">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Overlay Content (Static over the carousel) -->
+                <div class="hero-overlay">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-10">
+                                <span class="hero-badge" data-aos="fade-down">🔥 25% Discount For New Customers</span>
+                                <h1 class="display-3 fw-bold mb-4" id="hero-title">Professional Plumbing & Heating Services in Stockport & Manchester</h1>
+                                <p class="lead mb-5 opacity-75" id="hero-subtext">Reliable, Affordable & Trusted Local Experts for your home and business.</p>
+                                <div class="d-flex flex-wrap justify-content-center gap-3" id="hero-btns">
+                                    <a href="tel:01614322229" class="btn btn-premium btn-lg shadow">
+                                        <i class="fas fa-phone-alt me-2"></i> Call 0161 432 2229
+                                    </a>
+                                    <button onclick="showPage('contact')" class="btn btn-outline-light btn-lg px-5 rounded-pill">Get a Free Quote</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Services Overview -->
+            <section class="py-5 bg-white">
+                <div class="container py-5">
+                    <div class="text-center mb-5" data-aos="fade-up">
+                        <h6 class="text-primary fw-bold text-uppercase">Our Services</h6>
+                        <h2 class="fw-bold">Expert Solutions for Every Need</h2>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-4" data-aos="zoom-in" data-aos-delay="100">
+                            <div class="service-card text-center">
+                                <i class="fas fa-faucet"></i>
+                                <h4>Emergency Plumbing</h4>
+                                <p>Burst pipes, leaks, or blocked drains? We are available 24/7 for all emergencies.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4" data-aos="zoom-in" data-aos-delay="200">
+                            <div class="service-card text-center">
+                                <i class="fas fa-fire"></i>
+                                <h4>Boiler Repairs</h4>
+                                <p>No hot water? Our Gas Safe registered engineers diagnose and fix boilers fast.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4" data-aos="zoom-in" data-aos-delay="300">
+                            <div class="service-card text-center">
+                                <i class="fas fa-thermometer-half"></i>
+                                <h4>Central Heating</h4>
+                                <p>Full installations, radiator repairs, and efficient system upgrades.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Why Choose Us -->
+            <section class="py-5 bg-light">
+                <div class="container py-5">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6" data-aos="fade-right">
+                            <h2 class="fw-bold mb-4">Why Choose AA Manchester?</h2>
+                            <ul class="list-unstyled">
+                                <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-success me-3 fs-4"></i> 24/7 Emergency Callout Service</li>
+                                <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-success me-3 fs-4"></i> Fully Qualified & Gas Safe Engineers</li>
+                                <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-success me-3 fs-4"></i> 20-Mile Coverage Radius from Stockport</li>
+                                <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-success me-3 fs-4"></i> Transparent & Affordable Pricing</li>
+                            </ul>
+                            <button onclick="showPage('contact')" class="btn btn-primary btn-lg mt-3">Book Your Service</button>
+                        </div>
+                        <div class="col-lg-6 mt-5 mt-lg-0" data-aos="fade-left">
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <div class="bg-primary p-4 rounded text-white text-center">
+                                        <h2 class="fw-bold mb-0">15+</h2>
+                                        <small>Years Experience</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="bg-dark p-4 rounded text-white text-center">
+                                        <h2 class="fw-bold mb-0">2k+</h2>
+                                        <small>Happy Clients</small>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <img src="https://images.unsplash.com/photo-1621905252507-b354bcadc0d6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="img-fluid rounded shadow" alt="Plumbing Tools">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Coverage -->
+            <section class="py-5 bg-primary text-white text-center overflow-hidden">
+                <div class="container py-4">
+                    <h2 class="fw-bold mb-4" data-aos="fade-up">Local Service Area</h2>
+                    <p class="lead mb-5" data-aos="fade-up" data-aos-delay="100">Covering a 20-Mile Radius of Stockport, Cheshire, including:</p>
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                        <span class="badge bg-light text-primary px-3 py-2">Reddish</span>
+                        <span class="badge bg-light text-primary px-3 py-2">Bramhall</span>
+                        <span class="badge bg-light text-primary px-3 py-2">Bredbury</span>
+                        <span class="badge bg-light text-primary px-3 py-2">Hazelgrove</span>
+                        <span class="badge bg-light text-primary px-3 py-2">Heaton Moor</span>
+                        <span class="badge bg-light text-primary px-3 py-2">Heaton Chapel</span>
+                        <span class="badge bg-light text-primary px-3 py-2">Heaton Norris</span>
+                        <span class="badge bg-light text-primary px-3 py-2">Heaton Mersey</span>
+                        <span class="badge bg-light text-primary px-3 py-2">Offerton</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- PLUMBING PAGE -->
+        <div id="plumbing" class="page-content">
+            <section class="py-5 bg-light border-bottom">
+                <div class="container text-center pt-5">
+                    <h1 class="display-4 fw-bold text-primary">Plumbing Services</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center">
+                            <li class="breadcrumb-item"><a href="#" onclick="showPage('home')">Home</a></li>
+                            <li class="breadcrumb-item active">Plumbing</li>
+                        </ol>
+                    </nav>
+                </div>
+            </section>
+            <section class="py-5">
+                <div class="container">
+                    <div class="row g-5 align-items-center">
+                        <div class="col-lg-6">
+                            <img src="https://images.unsplash.com/photo-1504148455328-c376907d081c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="img-fluid rounded-4 shadow-lg" alt="Plumbing">
+                        </div>
+                        <div class="col-lg-6">
+                            <h2 class="fw-bold text-primary mb-4">Residential & Commercial Plumbing</h2>
+                            <p>From minor tap repairs to complete pipe replacements, we handle it all. Our team is equipped with the latest diagnostic tools to find leaks quickly and minimize disruption to your home.</p>
+                            <div class="row mt-4">
+                                <div class="col-md-6 mb-3">
+                                    <h5 class="fw-bold"><i class="fas fa-check text-primary me-2"></i> Tap Repairs</h5>
+                                    <p class="small text-muted">Dripping taps fixed or replaced instantly.</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h5 class="fw-bold"><i class="fas fa-check text-primary me-2"></i> Leak Detection</h5>
+                                    <p class="small text-muted">Non-invasive methods to find hidden leaks.</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h5 class="fw-bold"><i class="fas fa-check text-primary me-2"></i> Blocked Drains</h5>
+                                    <p class="small text-muted">Professional clearing of sinks and toilets.</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h5 class="fw-bold"><i class="fas fa-check text-primary me-2"></i> Water Tanks</h5>
+                                    <p class="small text-muted">Modernizing your home's water storage.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- INSTALLATIONS PAGE -->
+        <div id="installations" class="page-content">
+            <section class="py-5 bg-dark text-white text-center">
+                <div class="container pt-5">
+                    <h1 class="display-4 fw-bold">Installations & Upgrades</h1>
+                    <p class="lead">Efficient Heating & Beautiful Bathrooms</p>
+                </div>
+            </section>
+            <section class="py-5">
+                <div class="container">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="p-5 border rounded-4 bg-white shadow-sm">
+                                <i class="fas fa-hot-tub-person fs-1 text-primary mb-3"></i>
+                                <h3 class="fw-bold">Bathroom Installations</h3>
+                                <p>We offer a complete design and installation service for luxury and functional bathrooms. From tiling to final plumbing, we manage the entire project.</p>
+                                <button onclick="showPage('contact')" class="btn btn-outline-primary">Get Consultation</button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-5 border rounded-4 bg-white shadow-sm">
+                                <i class="fas fa-fire-burner fs-1 text-primary mb-3"></i>
+                                <h3 class="fw-bold">Boiler Installations</h3>
+                                <p>Save money on energy bills with an A-rated boiler. We install top brands like Worcester Bosch, Vaillant, and Ideal with extended warranties.</p>
+                                <button onclick="showPage('contact')" class="btn btn-outline-primary">View Options</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- REVIEWS PAGE -->
+        <div id="reviews" class="page-content">
+            <section class="py-5 bg-light">
+                <div class="container text-center pt-5">
+                    <h1 class="fw-bold">What Our Customers Say</h1>
+                    <div class="testimonial-slider mt-5">
+                        <div class="testimonial-item active" id="t-1">
+                            <div class="text-warning mb-3">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <p class="fs-4 italic">"Fantastic service! Paul came out within an hour of my calling about a major leak. Professional, clean, and very reasonably priced."</p>
+                            <h5 class="fw-bold mt-3">- James Wilson, Stockport</h5>
+                        </div>
+                        <div class="testimonial-item" id="t-2">
+                            <div class="text-warning mb-3">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <p class="fs-4">"New boiler installed in two days. The team was very respectful of our home and the energy savings have been huge!"</p>
+                            <h5 class="fw-bold mt-3">- Sarah Thompson, Manchester</h5>
+                        </div>
+                        <div class="testimonial-item" id="t-3">
+                            <div class="text-warning mb-3">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <p class="fs-4">"Best plumber in Stockport. Honest advice and no hidden costs. Highly recommend AA Manchester."</p>
+                            <h5 class="fw-bold mt-3">- Robert Davis, Reddish</h5>
+                        </div>
+                        <div class="mt-4">
+                            <button class="btn btn-sm btn-primary" onclick="prevTestimonial()">Previous</button>
+                            <button class="btn btn-sm btn-primary" onclick="nextTestimonial()">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- GALLERY PAGE -->
+        <div id="gallery" class="page-content">
+            <section class="py-5">
+                <div class="container pt-5">
+                    <h1 class="fw-bold text-center mb-5">Our Work Gallery</h1>
+                    <div class="row g-4" id="gallery-container">
+                        <!-- Items generated via JS -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- LOCATION PAGE -->
+        <div id="location" class="page-content">
+            <section class="py-5">
+                <div class="container pt-5">
+                    <div class="row g-4 align-items-center">
+                        <div class="col-lg-5">
+                            <h1 class="fw-bold text-primary">Find Us</h1>
+                            <p class="lead">Based in the heart of Reddish, we serve the entire Greater Manchester and Cheshire area.</p>
+                            <div class="p-4 bg-white rounded-4 shadow-sm mt-4">
+                                <div class="d-flex mb-4">
+                                    <i class="fas fa-map-marker-alt text-primary fs-3 me-3"></i>
+                                    <div>
+                                        <h5 class="fw-bold">Address</h5>
+                                        <p class="mb-0">463 Gorton Road, Reddish,<br>Stockport, Cheshire, SK5 6LR</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex mb-4">
+                                    <i class="fas fa-phone text-primary fs-3 me-3"></i>
+                                    <div>
+                                        <h5 class="fw-bold">Call Us</h5>
+                                        <p class="mb-0">0161 432 2229 / 07974 221070</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="rounded-4 overflow-hidden shadow" style="height: 450px;">
+                                <iframe 
+                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2376.518606015556!2d-2.1491752!3d53.4413247!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487bb3c38f972289%3A0xc49b749d280e2f5d!2s463%20Gorton%20Rd%2C%20Reddish%2C%20Stockport%20SK5%206LR!5e0!3m2!1sen!2suk!4v1715456789123!5m2!1sen!2suk" 
+                                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- CONTACT PAGE -->
+        <div id="contact" class="page-content">
+            <section class="py-5 bg-light">
+                <div class="container pt-5">
+                    <div class="max-width-800 mx-auto bg-white p-5 rounded-4 shadow">
+                        <h2 class="fw-bold text-center mb-4">Request a Free Quote</h2>
+                        <form id="contactForm" onsubmit="handleContactSubmit(event)">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">First Name *</label>
+                                    <input type="text" class="form-control" name="firstname" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Last Name *</label>
+                                    <input type="text" class="form-control" name="lastname" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email *</label>
+                                    <input type="email" class="form-control" name="email" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Phone Number *</label>
+                                    <input type="tel" class="form-control" name="phone" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Describe Service Required *</label>
+                                    <textarea class="form-control" name="service" rows="4" required></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="consent" required>
+                                        <label class="form-check-label small" for="consent">
+                                            By filling out this form and accepting below, you are giving explicit consent to us contacting you. By doing this you are acknowledging our <a href="#" onclick="showPage('privacy')">privacy policy</a>. It is your right at any time to unsubscribe and stop receiving further communications.
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12 text-center mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill">Submit Request</button>
+                                </div>
+                            </div>
+                        </form>
+                        <div id="formSuccess" class="alert alert-success mt-4 d-none">
+                            <i class="fas fa-check-circle me-2"></i> Thank you! Your request has been sent to paul.mphs@talktalk.net. We will contact you shortly.
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- PRIVACY POLICY PAGE -->
+        <div id="privacy" class="page-content">
+            <section class="py-5">
+                <div class="container pt-5">
+                    <div class="max-width-800 mx-auto">
+                        <h1 class="fw-bold mb-4">Privacy Policy</h1>
+                        <h4 class="fw-bold">What Information Is Collected</h4>
+                        <p>We collect information such as your name, email address, and phone number when you fill out our contact form. This is used solely for responding to your inquiries and providing plumbing services.</p>
+                        
+                        <h4 class="fw-bold">Financial Information</h4>
+                        <p>We do not collect or store credit card details through this website. All financial transactions are handled securely via professional invoicing methods.</p>
+
+                        <h4 class="fw-bold">Cookies</h4>
+                        <p>Our website uses basic cookies to enhance user experience and analyze traffic. You can choose to disable cookies in your browser settings.</p>
+
+                        <h4 class="fw-bold">Web Beacons</h4>
+                        <p>We may use web beacons to understand how users interact with our site content to improve our digital services.</p>
+
+                        <h4 class="fw-bold">Electronic Mail</h4>
+                        <p>Information sent via email or the contact form is treated as confidential. We will never sell your contact details to third parties.</p>
+
+                        <h4 class="fw-bold">Protection of Information</h4>
+                        <p>We implement standard security measures to protect your personal data from unauthorized access or disclosure.</p>
+
+                        <h4 class="fw-bold">Limitation of Liability</h4>
+                        <p>While we strive for data security, AA Manchester Plumbing & Heating Services cannot be held liable for breaches beyond our reasonable control.</p>
+
+                        <h4 class="fw-bold">Contacting Us</h4>
+                        <p>If you have questions regarding this policy, please contact us at paul.mphs@talktalk.net.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h5 class="fw-bold text-white mb-4">AA Manchester Plumbing & Heating</h5>
+                    <p class="text-muted">Professional heating services in Stockport and Manchester. Reliable local experts with 24/7 emergency support.</p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-white fs-4"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-white fs-4"><i class="fab fa-google"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <h5 class="fw-bold text-white mb-4">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" onclick="showPage('home')" class="footer-link">Home</a></li>
+                        <li><a href="#" onclick="showPage('plumbing')" class="footer-link">Plumbing</a></li>
+                        <li><a href="#" onclick="showPage('installations')" class="footer-link">Installations</a></li>
+                        <li><a href="#" onclick="showPage('gallery')" class="footer-link">Gallery</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h5 class="fw-bold text-white mb-4">Support</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" onclick="showPage('contact')" class="footer-link">Quote Request</a></li>
+                        <li><a href="#" onclick="showPage('privacy')" class="footer-link">Privacy Policy</a></li>
+                        <li><a href="#" onclick="showPage('location')" class="footer-link">Our Location</a></li>
+                        <li><a href="#" onclick="showPage('reviews')" class="footer-link">Reviews</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <h5 class="fw-bold text-white mb-4">Contact Info</h5>
+                    <p class="text-muted"><i class="fas fa-map-marker-alt me-2"></i> Stockport, Cheshire</p>
+                    <p class="text-muted"><i class="fas fa-phone me-2"></i> 0161 432 2229</p>
+                    <p class="text-muted"><i class="fas fa-envelope me-2"></i> paul.mphs@talktalk.net</p>
+                </div>
+            </div>
+            <hr class="my-4 opacity-25">
+            <div class="text-center small text-muted">
+                <p class="mb-1">&copy; 2026. Thomson Directories Ltd.</p>
+                <p class="mb-0">The content of this website is owned by us and our licensors; copying of any content without our consent is in breach of our T&Cs | All rights Reserved</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JS Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <script>
+        // Init AOS
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+
+        // Hero Entrance Animation
+        function animateHero() {
+            const tl = gsap.timeline();
+            tl.from("#hero-title", {
+                duration: 1.2, 
+                y: 80, 
+                opacity: 0, 
+                ease: "power4.out"
+            })
+            .from("#hero-subtext", {
+                duration: 0.8, 
+                y: 40, 
+                opacity: 0, 
+                ease: "power3.out"
+            }, "-=0.6")
+            .from("#hero-btns", {
+                duration: 0.6, 
+                y: 30, 
+                opacity: 0, 
+                ease: "back.out(1.7)"
+            }, "-=0.4");
+        }
+
+        // Preloader Logic
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+                animateHero();
+            }, 500);
+        });
+
+        // Navigation / Routing Logic
+        function showPage(pageId) {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if(link.textContent.toLowerCase().includes(pageId)) link.classList.add('active');
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            const navCollapse = document.getElementById('navbarNav');
+            const bsCollapse = bootstrap.Collapse.getInstance(navCollapse);
+            if(bsCollapse) bsCollapse.hide();
+
+            // Re-trigger hero animation if returning to home
+            if(pageId === 'home') animateHero();
+        }
+
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('.navbar');
+            if(window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        });
+
+        // Testimonial Slider Logic
+        let currentTestimonial = 1;
+        const totalTestimonials = 3;
+
+        function nextTestimonial() {
+            document.getElementById(`t-${currentTestimonial}`).classList.remove('active');
+            currentTestimonial = (currentTestimonial % totalTestimonials) + 1;
+            document.getElementById(`t-${currentTestimonial}`).classList.add('active');
+        }
+
+        function prevTestimonial() {
+            document.getElementById(`t-${currentTestimonial}`).classList.remove('active');
+            currentTestimonial = currentTestimonial === 1 ? totalTestimonials : currentTestimonial - 1;
+            document.getElementById(`t-${currentTestimonial}`).classList.add('active');
+        }
+
+        // Gallery Population
+        const galleryImages = [
+            'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1581094288338-2314dddb7ec4?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1542013936693-884638332954?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1617333032889-2ddf1553793c?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=400&q=80'
+        ];
+
+        const galleryContainer = document.getElementById('gallery-container');
+        galleryImages.forEach(imgUrl => {
+            const col = document.createElement('div');
+            col.className = 'col-md-4';
+            col.innerHTML = `
+                <div class="gallery-item shadow-sm" onclick="openLightbox('${imgUrl}')">
+                    <img src="${imgUrl}" alt="Plumbing Work">
+                </div>
+            `;
+            galleryContainer.appendChild(col);
+        });
+
+        function openLightbox(url) {
+            const lb = document.getElementById('lightbox');
+            const img = document.getElementById('lightbox-img');
+            img.src = url;
+            lb.style.display = 'flex';
+        }
+
+        // Form Submission (Simulated Backend)
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const successMsg = document.getElementById('formSuccess');
+            
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Sending...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                btn.innerHTML = 'Sent Successfully';
+                successMsg.classList.remove('d-none');
+                e.target.reset();
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
